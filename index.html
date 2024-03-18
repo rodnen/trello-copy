@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" type="image/x-icon" href=".//public/img/logo.png" />
+
+    <link rel="stylesheet" type="text/css" href=".//public/css/root.css">
+    <link rel="stylesheet" type="text/css" href=".//public/css/board.css">
+    <link rel="stylesheet" type="text/css" href=".//public/css/body.css">
+    <link rel="stylesheet" type="text/css" href=".//public/css/dialog.css">
+    <link rel="stylesheet" type="text/css" href=".//public/css/toast.css">
+    <link rel="stylesheet" type="text/css" href=".//public/css/drop-down-menu.css">
+    <link rel="stylesheet" type="text/css" href=".//public/css/header.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./public/js/load.js"></script>
+    <script type="text/javascript" src="./public/js/main.js"></script>
+    <script type="text/javascript" src="./public/js/user.js"></script>
+    <script type="text/javascript" src="./public/js/dialogs.js"></script>
+    <script type="text/javascript" src="./public/js/saves.js"></script>
+    
+    <title>Trello</title>
+</head>
+<body>
+  <header>
+    <div class="h-nav-menu">
+      <div id="show-all-boards-json">Показати JSON</div>
+      <div id="clear-storage">Очистити local storage</div>
+    </div>
+  </header>
+  <div class="main-content">
+    <section class="boards-list-section" aria-expanded="true">
+      <div id="hide-menu-bar">
+        <div class="work-place">
+          <div class="p-icon">P</div>
+          <div class="work-place-container">
+            <span class="b-h-color">Робоча область</span>
+            <span class="b-h-color">Trello</span>
+          </div>
+        </div>
+        <div id="show-hide-menu" class="show-hide-btn"><i class='bx bx-chevron-left'></i></div>
+      </div>
+      <div class="menu-bar-content">
+        <div class="title b-h-color">Ваші дошки</div>
+        <div class="content"></div>
+      </div>
+    </section>
+
+    <section class="list-content">
+      <div class="floating-btn hidden" id="show-hide-menu"><i class="bx bx-chevron-right"></i></div>
+      <div class="empty-content absolute">Оберіть або створіть дошку</div>
+    </section>
+    
+  </div>
+</div>
+<div class="toast-msg-body"></div>
+
+</body>
+</html>
+
+
+
+
+<!--<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyAA-W3V6f4Kmak4q6uB2uoR8zqXPAccpeM",
+      authDomain: "trello-copy-3e80a.firebaseapp.com",
+      projectId: "trello-copy-3e80a",
+      storageBucket: "trello-copy-3e80a.appspot.com",
+      messagingSenderId: "108434659567",
+      appId: "1:108434659567:web:f019290d61f40fedf2631a",
+      measurementId: "G-661KMZ031X"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>-->

@@ -1,0 +1,94 @@
+::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-height);
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-bg);
+    border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.hidden{
+    opacity: 0;
+    visibility: hidden;
+}
+
+#show-all-boards-json{
+    font-size: 14px;
+    font-family: var(--base-font-family);
+    color: #ffffff;
+}
+
+[contenteditable=true]{
+    outline: none;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+    margin-left: -5px;
+}
+
+[contenteditable=true]:focus{
+    background-color: rgb(255,255,255,0.1);
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    background-color: var(--background);
+    overflow: hidden;
+}
+
+.input-container input{
+    background-color: transparent;
+}
+
+input, select, textarea{
+    outline: none;
+    border: none;
+    resize: none;
+    background-color: var(--dialog-input-bg);
+    opacity: .9;
+}
+
+ol, li{
+    list-style-type: none;
+    padding:0;
+    margin: 0;
+}
+
+.main-content{
+    display: flex;
+    height: calc(100vh - var(--header-height));
+    flex-direction: row;
+    margin-top: calc(var(--header-height));
+    overflow: auto;
+    /*background: var(--board-bg1);*/
+}
+
+.b-h-color,
+.b-h-color span{
+    color: #a9b4bf;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--base-font-family);
+}
+
+.h-color,
+.h-color span{
+    color: #f2f3f4;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--base-font-family);
+}
+
+.ctrl-e{
+    cursor: pointer;
+}

@@ -1,0 +1,52 @@
+:root{
+    --background: #1d2125;
+    --foreground: #101204;
+    --g-border-color: #31383d;
+    --list-bg-hover: #ffffff30;
+
+    --dialog-bg: #323940;
+    --dialog-bg-hover: #ffffff10;
+    --dialog-text-color: #9fadbc;
+    --dialog-input-bg: var(--foreground);
+
+    --tile-bg-color: #22272b;
+    --tile-h-color: #a4afbb;
+
+    --scrollbar-bg: #a7a7a78f;
+    --scrollbar-width: 8px;
+    --scrollbar-height: 8px;   
+
+    --base-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --border-color: #484d51;
+    --primary: rgb(89, 211, 132);
+    --bg-error: #dd3363;
+    --svg-reject: red;
+    --header-bg:  blue;
+    --font-color: #9fadbc;
+
+    --drop-down-bg: #282e33;
+    --drop-down-border: #39424a;
+    --drop-down-bg-hover: #3d474f;
+
+    --header-height: 48px;
+    --board-nav-height: 32px;
+    --header-bg: #1d2125;
+    --header-transparent-bg: rgb(29, 33, 37,0.9);
+
+    --board-bg0: linear-gradient(125deg,#4076b4, #14b5ce);
+    --board-bg1: linear-gradient(170deg,#7f00ff, #e100ff);
+    --board-bg2: linear-gradient(#ef4136, #fbb040);
+    --board-bg3: linear-gradient(135deg, #ff00d4, #00ddff);
+    --board-bg4: linear-gradient(100deg,#ee2a7b, #ff7db8);
+    --board-bg5: linear-gradient(90deg,#543884, #262254);
+    --board-bg6: linear-gradient(43deg, #4158D0 5%, #C850C0 46%, #FFCC70 100%);
+    --board-bg7: linear-gradient(43deg,#ff00cc, #333399);
+    --board-bg8: linear-gradient(86deg,#cb2d3e, #ef473a);
+    --board-bg9: linear-gradient(103deg,#141E30, #243B55);
+
+    --expanded-aria: 260px;
+    --hiden-aria: 10px;
+    --current-aria-width: var(--expanded-aria);
+
+    --active-element-bg: #282e33;
+}

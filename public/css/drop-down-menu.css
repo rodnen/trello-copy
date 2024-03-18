@@ -1,0 +1,100 @@
+.l-drop-down{
+    background: var(--drop-down-bg);
+    border: 2px solid var(--drop-down-border);
+    border-radius: 8px;
+    width: 250px;
+    color: var(--dialog-text-color);
+    font-family: var(--base-font-family);
+    font-size: 14px;
+    padding-bottom: 8px;
+    position: absolute;
+    z-index: 10;
+}
+
+.for-list{
+    margin-left: 195px;
+}
+
+.top{
+    top: 100%;
+}
+
+.for-users{
+    right: 0;
+    top: 100%;
+}
+
+
+.l-drop-down .title-bar, 
+.board-settings .title-bar,
+.board-settings-bg .title-bar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.l-drop-down .title-bar .title,
+.board-settings .title-bar .title,
+.board-settings-bg .title-bar .title{
+    justify-content: center;
+    display: flex;
+    align-self: center;
+    flex-grow: 1;
+}
+
+.l-drop-down .drop-down-content .list .list-el{
+    padding: 10px;
+}
+
+.l-drop-down .drop-down-content .list .list-el:hover{
+    background: var(--drop-down-bg-hover);
+}
+
+.l-drop-down .title-bar .close-btn i{
+    font-size: 18px;
+}
+
+.l-drop-down .title-bar .close-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.l-drop-down .title-bar .close-btn:hover{
+    background: var(--drop-down-bg-hover);
+}
+
+.color-picker{
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.l-drop-down:not(.for-list, .for-users) .drop-down-content .list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px;
+}
+
+.l-drop-down:not(.for-list) .drop-down-content .list .tag-el{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.l-drop-down .drop-down-content .list .tag-color{
+    padding: 15px 5px;
+    border-radius: 4px;
+    flex-grow: 1;
+}
+
+.l-drop-down:not(.for-list) .drop-down-content .list .tag-el input[type=checkBox]{
+    width: 15px;
+    height: 15px;
+    pointer-events: none;
+}

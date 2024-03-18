@@ -1,0 +1,327 @@
+.faded-bg{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000020;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 2;
+    top:0;
+}
+
+.faded-bg .user-dialog{
+    width: 300px;
+    height: fit-content;
+    max-height: 400px;
+}
+
+
+.faded-bg .modal-dialog{
+    width: 500px;
+    height: fit-content;
+}
+
+
+.faded-bg .dialog-window{
+    position: absolute;
+    background-color: var(--dialog-bg);
+    border-radius: 12px;
+    color: var(--dialog-text-color);
+    font-family: var(--base-font-family);
+    pointer-events: auto !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.faded-bg .dialog-window.yes-no .dialog-btn-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.faded-bg .dialog-window.yes-no .section-name{
+    box-shadow: inset var(--border-color) 0 -1px 0;
+    padding: 20px;
+}
+
+.faded-bg .dialog-window.yes-no{
+    display: flex;
+    flex-direction: column;
+}
+
+.faded-bg .dialog-window.yes-no .dialog-btn-container .dialog-btn{
+    flex-grow: 1;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: inset var(--border-color) 0 0 0 1px;
+
+}
+
+.faded-bg .dialog-window .title-bar{
+    border-bottom: 1px solid var(--border-color);
+}
+
+.faded-bg .dialog-window .footer-bar{
+    margin: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+.faded-bg .dialog-window .title-bar,
+.faded-bg .dialog-window .footer-bar{
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+.faded-bg .dialog-window .title-bar .close-btn i{
+    font-size: 18px;
+}
+
+.faded-bg .dialog-window .title-bar .close-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.faded-bg .dialog-window .dialog-content{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.faded-bg .dialog-window .dialog-user-content{
+    max-height: 250px;
+    overflow: auto;
+}
+
+.faded-bg .dialog-window .dialog-content input,
+.faded-bg .dialog-window .dialog-content select,
+.faded-bg .dialog-window .dialog-content textarea{
+    color: var(--dialog-text-color);
+    font-size: 14px;
+    font-family: var(--base-font-family);
+}
+
+.faded-bg .dialog-window .dialog-content select{
+    width: 100%;
+}
+
+.faded-bg .dialog-window .dialog-content input:not(.deadline-input){
+    width: calc(100% - 10px);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.faded-bg .dialog-window .dialog-content textarea{
+    width: calc(100% - 20px);
+    height: 100px;
+    padding: 10px 0 0 10px;
+    border-radius: 8px;
+}
+
+.d-element{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+input[type=date]::-webkit-calendar-picker-indicator {
+	display: none;
+}
+
+
+.faded-bg .dialog-window .dialog-content input,
+.faded-bg .dialog-window .dialog-content select{
+    padding: 0 0 0 10px;
+    border-radius: 8px;
+    height: 35px;
+}
+
+.faded-bg .dialog-window .footer-bar .create-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: inset var(--border-color) 0 0 0 1px;
+}
+
+.faded-bg .dialog-window .title-bar .close-btn:hover,
+.faded-bg .dialog-window.yes-no .dialog-btn-container .dialog-btn:hover{
+    background-color: var(--dialog-bg-hover);
+}
+
+.faded-bg .dialog-window .footer-bar .create-btn:hover{
+    background-color: var(--dialog-bg-hover);
+}
+
+
+.e-container, .r-container{
+    width: calc(100% - 45px);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: 45px;
+    justify-content: start;
+}
+
+.add-employee{
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    background: var(--dialog-input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-down-content .e-list .profile-thumbnail:not(.active):hover{
+    background: var(--drop-down-bg-hover);
+}
+
+.add-employee:hover,
+.e-list .profile-thumbnail:not(.active):hover{
+    background-color: var(--dialog-bg-hover);
+ }
+
+li.profile-thumbnail img{
+    width: 36px;
+    height: 36px;
+    border-radius: 100%;
+}
+
+.e-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.e-list .profile-thumbnail{
+    padding: 5px 10px;
+}
+
+.profile-thumbnail{
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    gap: 10px;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    border-radius: 8px;
+}
+
+.drop-down-content .e-list{
+    gap: 0;
+}
+
+.drop-down-content .profile-thumbnail{
+    border-radius: 0;
+}
+
+.drop-down-content .profile-thumbnail.active{
+    background: var(--drop-down-bg-hover);
+}
+
+.profile-thumbnail.active{
+    background-color: #ffffff10;
+}
+.input-container{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.input-container i{
+    font-size: 25px;
+}
+
+.input-container input{
+    font-size: 16px;
+}
+
+.input-container input:focus,
+.input-container textarea:focus{
+    background: var(--foreground);
+    box-shadow: inset #85b8ff 0 0 0 2px;
+}
+
+.input-container input.deadline-input{
+    width: fit-content;
+}
+
+.top-container i{
+    align-self: self-start;
+}
+
+.d-textarea-body,
+.d-date-body{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.d-textarea-body span,
+.d-date-body span{
+    padding-left: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.d-textarea-body textarea{
+    margin-left: 10px;
+}
+
+/*TAGS*/
+
+.tags-container{
+    width: calc(100% - 55px - 25px);
+    font-size: 14px;
+    padding-left: 10px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tags-container .tags-body{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.tags-container .add-tag-btn{
+    border-radius: 4px;
+    width: 30px;
+    height: 30px;
+    background-color: var(--dialog-bg-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.tags-container .s-tag-color{
+    border-radius: 4px;
+    height: 30px;
+    width: 60px;
+}
