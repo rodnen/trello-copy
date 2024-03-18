@@ -228,6 +228,13 @@
     padding: 10px;
 }
 
+.board-settings .menu-content .list{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .board-settings .menu-content .list-el,
 .board-settings-bg .menu-content .list-el{
     display: flex;
@@ -237,7 +244,6 @@
     width: calc(100% - 10px);
     gap: 12px;
     border-radius: 8px;
-    margin-bottom: 8px;
 }
 
 .board-settings-bg .menu-content .list-el.tag-color{

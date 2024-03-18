@@ -112,8 +112,9 @@ function CreateModalWindowForList(parent){
     });
 }
 
-function createModalWindowForTile(parent) {
+async function createModalWindowForTile(parent) {
     localStorage.removeItem('selected-users');
+    localStorage.removeItem('selected-workers');
     localStorage.removeItem('selected-responsible');
 
     const window = CreateModalWindowComponents();
@@ -138,8 +139,8 @@ function createModalWindowForTile(parent) {
     const employesContainer = $('<div>').addClass('e-container');
     const responsibleContainer = $('<div>').addClass('r-container');
 
-    addEmployeeBtn.on('click', () => { addUsers(parent, employesContainer, 1);});
-    addResponsibleBtn.on('click', () => { addUsers(parent, responsibleContainer, 2);});
+    addEmployeeBtn.on('click', async () => { await addUsers(parent, employesContainer, 1);});
+    addResponsibleBtn.on('click', async () => { await addUsers(parent, responsibleContainer, 2);});
 
     dateContainer.append(deadlineDate);
     descriptionContainer.append(description);
@@ -159,7 +160,7 @@ function createModalWindowForTile(parent) {
                 created: new Date(),
                 name: $('input[name="name"]').val(),
                 date: selectedDate,
-                employes: JSON.parse(localStorage['selected-users'] || '[]'),
+                employes: JSON.parse(localStorage['selected-workers'] || '[]'),
                 responsible: JSON.parse(localStorage['selected-responsible'] || '[]'),
                 description: $('textarea[name="description"]').val(),
                 tags: getSelectedTags(),
@@ -183,10 +184,14 @@ function createModalWindowForTile(parent) {
 
 function CreateModalWindowForTileEdit(parent, data) {
     localStorage.removeItem('selected-users');
+    localStorage.removeItem('selected-workers');
     localStorage.removeItem('selected-responsible');
 
-    saveLocalStorageArray('selected-users', data.employes);
+    saveLocalStorageArray('selected-workers', data.employes);
     saveLocalStorageArray('selected-responsible', data.responsible);
+
+    saveLocalStorageArray('selected-users', data.employes);
+    saveLocalStorageArray('selected-users', data.responsible);
 
     const window = CreateModalWindowComponents();
     window.find('.create-btn').text('Зберегти');
@@ -225,18 +230,18 @@ function CreateModalWindowForTileEdit(parent, data) {
         tagsBody.prepend($('<div>').addClass('s-tag-color').css('background', element));
     });
 
-    data.employes.forEach(element => {
-        const user = users.find(obj => obj.info.seed === element);
+    const createUserObj = (user) => {
         const listElement = $('<li>').addClass('profile-thumbnail').attr('data-id',user.info.seed);
         listElement.append($('<img>').attr('src',user.results[0].picture.thumbnail));
-        employesContainer.prepend(listElement);
-    });
+        return listElement;
+    };
 
     data.responsible.forEach(element => {
-        const user = users.find(obj => obj.info.seed === element);
-        const listElement = $('<li>').addClass('profile-thumbnail').attr('data-id',user.info.seed);
-        listElement.append($('<img>').attr('src',user.results[0].picture.thumbnail));
-        responsibleContainer.prepend(listElement);
+        responsibleContainer.prepend(createUserObj(users.find(obj => obj.info.seed === element)));
+    });
+
+    data.employes.forEach(element => {
+        employesContainer.prepend(createUserObj(users.find(obj => obj.info.seed === element)));
     });
 
     employesContainer.append(addEmployeeBtn);
@@ -255,7 +260,7 @@ function CreateModalWindowForTileEdit(parent, data) {
                 created: new Date(),
                 name: $('input[name="name"]').val(),
                 date: selectedDate,
-                employes: JSON.parse(localStorage['selected-users'] || '[]'),
+                employes: JSON.parse(localStorage['selected-workers'] || '[]'),
                 responsible: JSON.parse(localStorage['selected-responsible'] || '[]'),
                 description: $('textarea[name="description"]').val(),
                 prevDate : prevDate,
@@ -394,8 +399,9 @@ async function addUsers(parent, employesContainer, type) {
         const faded = createFadedBg();
         parent.append(faded);
         const userSeeds = await CreateModalWindowForUsers(faded);
+
         if (userSeeds) {
-            type === 1 ? saveLocalStorageArray('selected-users', userSeeds) : saveLocalStorageArray('selected-responsible', userSeeds);
+            type === 1 ? (saveLocalStorageArray('selected-workers', userSeeds), saveLocalStorageArray('selected-users', userSeeds)) : (saveLocalStorageArray('selected-responsible', userSeeds), saveLocalStorageArray('selected-users', userSeeds));
             
             const storage = JSON.parse(localStorage['board']);
             const boardData = getBoardDataFromStorage(storage, localStorage['selected-board']);
@@ -439,7 +445,11 @@ function createBoardSettings(titleName, type) {
         }
     }
     else if( type === 3 ){
-        const picker = $('<input>').attr('type','color');
+        const pickBtn = $('<div>').addClass('list-el ctrl-e').append($("<i>").addClass("bx bx-plus")).append('Додати мітку');
+        const picker = $('<input>').attr('type','color').addClass('color-picker');
+
+        pickBtn.append(picker);
+
         const storage = JSON.parse(localStorage['board']);
         const boardData = getBoardDataFromStorage(storage, localStorage['selected-board']);
         const colors = boardData.tags;
@@ -467,11 +477,15 @@ function createBoardSettings(titleName, type) {
             list.append(createEl(colors[i]));
         }
 
+        pickBtn.on('click', function(){
+            picker[0].click();
+        });
+
         picker.on('change',function(e){
             const selectedColor = e.target.value;
             if(boardData.tags.length < 10){
                 boardData.tags.push(selectedColor);
-                createEl(selectedColor).insertBefore(picker);
+                createEl(selectedColor).insertBefore(pickBtn);
                 updateLocalStorage('board', JSON.stringify(storage));
             }
             else{
@@ -479,7 +493,7 @@ function createBoardSettings(titleName, type) {
             }
         });
 
-        list.append(picker);
+        list.append(pickBtn);
     }
 
     menuContent.append(list);
@@ -638,12 +652,19 @@ $(document).on('click','.e-list li.profile-thumbnail',function(){
     $(this).toggleClass('active');
 });
 
-$(document).on('click', '.e-container li.profile-thumbnail', function(){
+$(document).on('click', '.e-container li.profile-thumbnail, .r-container li.profile-thumbnail', function(){
     const id = $(this).attr('data-id');
     const users = JSON.parse(localStorage['selected-users']);
+    const workers = JSON.parse(localStorage['selected-workers']);
+    const responsible = JSON.parse(localStorage['selected-responsible']);
 
-    const newArray = removeFromArrayByValue(users,id);
-    updateLocalStorage('selected-users',JSON.stringify(newArray));
+    const newUsers = removeFromArrayByValue(users,id);
+    const newWorkers = removeFromArrayByValue(workers,id);
+    const newResponsible = removeFromArrayByValue(responsible,id);
+
+    updateLocalStorage('selected-users',JSON.stringify(newUsers));
+    updateLocalStorage('selected-workers',JSON.stringify(newWorkers));
+    updateLocalStorage('selected-responsible',JSON.stringify(newResponsible));
 
     $(this).remove();
 });
