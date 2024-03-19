@@ -266,6 +266,7 @@ $(document).on('click', '.res-list-clr', function(){
 });
 
 $(document).on('click','.board-item', function(){
+    localStorage.removeItem('selected-filter');
     $('.board-item.active').removeClass('active');
     $(this).addClass('active');
 
@@ -279,7 +280,7 @@ $(document).on('click','.board-item', function(){
     
     listContent.append(btn);
     createListContent(listContent,data);
-    loadLists($(this));
+    loadLists();
 });
 
 
@@ -301,13 +302,14 @@ function createListContent(body,data){
     const h1 = $('<h1>').attr('id','list-name').attr("contenteditable", "true").text(data.name);
     const select = $('<select>');
     const btnSettings = $('<div>').addClass('btn-settings h-color ctrl-e').append($('<i>').addClass('bx bxs-cog'));
+    const btnFilter = $('<div>').addClass('btn-filter h-color ctrl-e').append($('<i>').addClass('bx bxs-filter-alt'));
     const genBtn = $('<div>').addClass('generate-users ctrl-e').text('Згенерувати користувачів');
 
     select.append($('<option>').text('Дошка'));
     select.append($('<option>').text('Календар'));
 
-    lPart.append(h1, /*select,*/ btnSettings);
-    rPart.append(users.length > 0 ? usersList(users) : genBtn);
+    lPart.append(h1, /*select,*/ btnSettings, btnFilter);
+    rPart.append(users.length > 0 ? usersList(users, 5) : genBtn);
     
     listNavigation.append(lPart, rPart);
 
@@ -322,11 +324,11 @@ function createListContent(body,data){
     body.append(listNavigation, lists);
 }
 
-function usersList(users){
+function usersList(users, count){
     const container = $('<div>').addClass('board-users-container');
     const body = $('<div>').addClass('profile-thumbnail');
     const countOfUsers = users.length;
-    const maxIter = countOfUsers >= 5 ? 5 : countOfUsers;
+    const maxIter = countOfUsers >= count ? count : countOfUsers;
 
     for(let i = 0; i < maxIter; i++){
         body.append($('<img>').addClass('nav-bar-img').attr('src',users[i].results[0].picture.thumbnail));
@@ -335,16 +337,20 @@ function usersList(users){
     if(maxIter != countOfUsers)
         body.append($('<div>').addClass('u-more-count').text('+'+ (countOfUsers - maxIter)));
 
-    container.on('click', async function (e){
-        localStorage.removeItem('selected-users');
-        if($('.l-drop-down.for-users').length === 0 && ($(e.target)[0] === container[0] || $(e.target)[0] === body[0] || $(e.target)[0] === body.find($(e.target))[0])) {
-            await CreateModalWindowForUsers(container.parent(), true);
-        }
-    });
-
     container.append(body);
     return container;
 }
+
+$(document).on('click', '.r-part-menu .board-users-container', async function (e){
+    localStorage.removeItem('selected-users');
+    const container = $(this);
+    const body = container.find('.profile-thumbnail');
+    const isContainerPart = ($(e.target)[0] === $(container)[0] || $(e.target)[0] === $(body)[0] || $(e.target)[0] === $(body.find($(e.target)))[0]);
+
+    if($('.l-drop-down.for-users').length === 0 && isContainerPart) {
+        await CreateModalWindowForUsers(container.parent(), true);
+    }
+});
 
 function createBoardItem(data){
     const boardItem = $('<div>').addClass('board-item ctrl-e').attr("data-id", data.id).append($('<span>').text(data.name));
@@ -380,10 +386,8 @@ function createTileItem(data){
     for(let i = 0; i < data.tags.length; i++){
         tagsBody.append($('<div>').addClass('tile-tag').css('background',data.tags[i]));
     }
-/*
-    for(let i = 0; i < data.users.length; i++){
-        tagsBody.append($('<div>').addClass('tile-tag').css('background',data.tags[i]));
-    }*/
+
+    const users = createTileUsers(data);
 
     const uSide = $('<div>').addClass('u-side');
     const dSide = $('<div>').addClass('d-side');
@@ -393,13 +397,28 @@ function createTileItem(data){
     const tileTitle = $('<div>').addClass('tile-title').text(data.name);
     const tileDate = $('<div>').addClass('tile-date').html("<i class='bx bx-time'></i>"+formatDate(new Date(data.date)));
 
-    uSide.append(tagsBody, tileTitle);
+    const titleUsersContainer = $('<div>').addClass('t-u-container');
+    titleUsersContainer.append(tileTitle, users);
+
+    uSide.append(tagsBody, titleUsersContainer);
     dSide.append(tileDate, deleteBtn);
 
     tileItem.append(uSide, dSide);
     return tileItem;
 }
 
+function createTileUsers(data){
+    const concatUsers = data.employes.concat(data.responsible);
+    const storage = JSON.parse(localStorage['board']);
+    const boardData = getBoardDataFromStorage(storage,localStorage['selected-board']);
+    const users = boardData.users;
+
+    const filteredObjects = users.filter(function(obj) {
+        return concatUsers.includes(obj.info.seed);
+    });
+
+    return usersList(filteredObjects, 2);
+}
 function formatDate(date){
     const months = ["січ", "лют", "бер", "квіт", "трав", "чер", "лип", "серп", "вер", "жовт", "лист", "груд"];
     const day = date.getDate();
@@ -537,23 +556,22 @@ function listDropDown(parent, data){
 
 function tagDropDown(parent, selectedTags){
     const window = dropDownComponent('Мітки');
-    const colors = JSON.parse(localStorage['board'])[0].tags;
+    const storage = JSON.parse(localStorage['board']);
+    const boardData = getBoardDataFromStorage(storage,localStorage['selected-board']);
+    const colors = boardData.tags;
     window.removeClass('for-list').addClass('top');
 
     for(let i = 0; i < colors.length; i++){
         const body = $('<div>').addClass('tag-el');
-        const checkInput = $('<input>').attr('type','checkBox');
         const element = $('<div>').addClass('tag-color list-el ctrl-e').css('background',colors[i]);
 
-        if (selectedTags.includes(colors[i])) {
-            checkInput.prop('checked', true);
-        }
+        if (selectedTags.includes(colors[i])) body.addClass('selected');
 
-        body.append(checkInput, element);
+        body.append(element);
         window.find('.list').append(body);
     }
 
-    window.insertAfter(parent.find('.add-tag-btn'));
+    window.insertAfter(parent);
 
     const html = $('html');
     html.on('click',function(e){
@@ -751,4 +769,8 @@ function hexToRgb(hex) {
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
     } : null;
+}
+
+function gi(n){
+    return localStorage[n];
 }

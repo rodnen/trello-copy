@@ -76,8 +76,12 @@
 .l-drop-down:not(.for-list, .for-users) .drop-down-content .list{
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
+    padding: 0 10px;
     margin: 10px;
+    overflow: auto;
+    max-height: 250px;
+    height: fit-content;
 }
 
 .l-drop-down:not(.for-list) .drop-down-content .list .tag-el{
@@ -85,12 +89,18 @@
     flex-direction: row;
     gap: 10px;
     align-items: center;
+    padding: 5px;
+    border-radius: 8px;
 }
 
 .l-drop-down .drop-down-content .list .tag-color{
     padding: 15px 5px;
     border-radius: 4px;
     flex-grow: 1;
+}
+
+.l-drop-down .drop-down-content .list .tag-el.selected{
+    box-shadow: inset #85b8ff 0 0 0 2px;
 }
 
 .l-drop-down:not(.for-list) .drop-down-content .list .tag-el input[type=checkBox]{

@@ -28,12 +28,12 @@ function loadBoards(body){
     }
 }
 
-function loadLists(board){
-    const boardID = board.attr('data-id');
+function loadLists(filterTags = []){
+    const boardID = localStorage['selected-board'];
     const storage = JSON.parse(localStorage['board']);
     const boardData = storage.find(obj => obj.id === boardID);
     const listsBody = $('#lists');
-
+    listsBody.html('');
     const listsData = boardData.lists;
     for(let i = 0; i < listsData.length; i++){
         const list = listsData[i];
@@ -43,11 +43,16 @@ function loadLists(board){
     
         for(let j = 0; j < tiles.length; j++){
             const tile = tiles[j];
-            listItem.find('.list-content').append(createTileItem(tile));
+            if(filterTags.length > 0){
+                if(tile.tags.some(item => filterTags.includes(item))){
+                    listItem.find('.list-content').append(createTileItem(tile));
+                }
+            } else{
+                listItem.find('.list-content').append(createTileItem(tile));
+            }
         }
 
         listsBody.append(listItem);
-    //    $('#lists').append(listItem);
     }
     
 }

@@ -139,15 +139,26 @@ async function createModalWindowForTile(parent) {
     const employesContainer = $('<div>').addClass('e-container');
     const responsibleContainer = $('<div>').addClass('r-container');
 
+    const empTitle = $('<div>').addClass('e-title').text('Робітники');
+    const resTitle = $('<div>').addClass('r-title').text('Відповідальні');
+
+
     addEmployeeBtn.on('click', async () => { await addUsers(parent, employesContainer, 1);});
     addResponsibleBtn.on('click', async () => { await addUsers(parent, responsibleContainer, 2);});
 
     dateContainer.append(deadlineDate);
     descriptionContainer.append(description);
+
+    const eBody = $('<div>').addClass('employee-body');
+    const rBody = $('<div>').addClass('responsible-body');
+
     employesContainer.append(addEmployeeBtn);
     responsibleContainer.append(addResponsibleBtn);
 
-    window.find('.dialog-content').append(inputContainer, tagsContainer, dateContainer, descriptionContainer, responsibleContainer, employesContainer);
+    eBody.append(empTitle, employesContainer);
+    rBody.append(resTitle, responsibleContainer);
+
+    window.find('.dialog-content').append(inputContainer, tagsContainer, dateContainer, descriptionContainer, eBody, rBody);
     parent.append(window);
 
     makeElementMovable(window, window.find('.title-bar'));
@@ -219,6 +230,9 @@ function CreateModalWindowForTileEdit(parent, data) {
     const employesContainer = $('<div>').addClass('e-container');
     const responsibleContainer = $('<div>').addClass('r-container');
 
+    const empTitle = $('<div>').addClass('e-title').text('Робітники');
+    const resTitle = $('<div>').addClass('r-title').text('Відповідальні');
+
     addEmployeeBtn.on('click', () => { addUsers(parent, employesContainer, 1);});
     addResponsibleBtn.on('click', () => { addUsers(parent, responsibleContainer, 2);});
 
@@ -236,21 +250,27 @@ function CreateModalWindowForTileEdit(parent, data) {
         return listElement;
     };
 
-    data.responsible.forEach(element => {
-        responsibleContainer.prepend(createUserObj(users.find(obj => obj.info.seed === element)));
-    });
-
     data.employes.forEach(element => {
         employesContainer.prepend(createUserObj(users.find(obj => obj.info.seed === element)));
     });
 
+    data.responsible.forEach(element => {
+        responsibleContainer.prepend(createUserObj(users.find(obj => obj.info.seed === element)));
+    });
+
+    const eBody = $('<div>').addClass('employee-body');
+    const rBody = $('<div>').addClass('responsible-body');
+
     employesContainer.append(addEmployeeBtn);
     responsibleContainer.append(addResponsibleBtn);
+
+    eBody.append(empTitle, employesContainer);
+    rBody.append(resTitle, responsibleContainer);
 
     dateContainer.append(deadlineDate);
     descriptionContainer.append(description);
 
-    window.find('.dialog-content').append(inputContainer, tagsContainer, dateContainer, descriptionContainer, responsibleContainer, employesContainer);
+    window.find('.dialog-content').append(inputContainer, tagsContainer, dateContainer, descriptionContainer, eBody, rBody);
     selectedDate = new Date();
     const prevDate = data.date;
 
@@ -360,7 +380,7 @@ async function CreateModalWindowForUsers(parent, view = false){
                 users.push(user);
 
                 const rPart = $('.r-part-menu');
-                const fill = usersList(users);
+                const fill = usersList(users, 5);
                 rPart.find('.board-users-container').remove();
                 rPart.prepend(fill);
                 updateLocalStorage('board', JSON.stringify(storage));
@@ -401,7 +421,13 @@ async function addUsers(parent, employesContainer, type) {
         const userSeeds = await CreateModalWindowForUsers(faded);
 
         if (userSeeds) {
-            type === 1 ? (saveLocalStorageArray('selected-workers', userSeeds), saveLocalStorageArray('selected-users', userSeeds)) : (saveLocalStorageArray('selected-responsible', userSeeds), saveLocalStorageArray('selected-users', userSeeds));
+            if(type === 1){
+                saveLocalStorageArray('selected-workers', userSeeds);
+                saveLocalStorageArray('selected-users', userSeeds);
+            }else{
+                saveLocalStorageArray('selected-responsible', userSeeds);
+                saveLocalStorageArray('selected-users', userSeeds);
+            }
             
             const storage = JSON.parse(localStorage['board']);
             const boardData = getBoardDataFromStorage(storage, localStorage['selected-board']);
@@ -519,6 +545,11 @@ $(document).on('click', '.btn-settings', function(){
     const main = $('.main-content');
     if(main.find('.board-settings').length === 0)
         main.append(createBoardSettings('Меню', 1));
+});
+
+$(document).on('click', '.btn-filter', function(){
+    const selectedFilters = JSON.parse(gi('selected-filter') || '[]');
+    tagDropDown($(this).parent(), selectedFilters);
 });
 
 
@@ -653,10 +684,14 @@ $(document).on('click','.e-list li.profile-thumbnail',function(){
 });
 
 $(document).on('click', '.e-container li.profile-thumbnail, .r-container li.profile-thumbnail', function(){
+    const isU = gi('selected-users') === undefined;
+    const isW = gi('selected-workers') === undefined;
+    const isR = gi('selected-responsible') === undefined;
+
     const id = $(this).attr('data-id');
-    const users = JSON.parse(localStorage['selected-users']);
-    const workers = JSON.parse(localStorage['selected-workers']);
-    const responsible = JSON.parse(localStorage['selected-responsible']);
+    const users = !isU ? JSON.parse(localStorage['selected-users']) : [];
+    const workers = !isW ? JSON.parse(localStorage['selected-workers']) : [];
+    const responsible = !isR ? JSON.parse(localStorage['selected-responsible']) : [];
 
     const newUsers = removeFromArrayByValue(users,id);
     const newWorkers = removeFromArrayByValue(workers,id);
@@ -691,14 +726,12 @@ function getSelectedTags(){
 
 $(document).on('click','.add-tag-btn',function(){
     const selectedTags = getSelectedTags();
-    tagDropDown($(this).parent(), selectedTags);  
+    tagDropDown($(this).parent().find('.add-tag-btn'), selectedTags);
 });
-
-$(document).on('click','.tag-el',function(){
-    const checkBox = $(this).find('input[type=checkBox]');
+$(document).on('click','.tags-body .top .tag-el',function(){
     const color = $(this).find('.tag-color').css('background');
-    const isChecked = checkBox.prop('checked');
-    checkBox.prop('checked', !isChecked);
+    const isChecked = $(this).hasClass('selected');
+    $(this).toggleClass('selected');
 
     const rgbRegex = /rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/;
     const match = color.match(rgbRegex);
@@ -710,7 +743,22 @@ $(document).on('click','.tag-el',function(){
     } else {
         console.log("RGB кольор не знайдений.");
     }
+});
 
+$(document).on('click','.l-nav-menu .top .tag-el',function(){
+    const color = $(this).find('.tag-color').css('background');
+    const isChecked = $(this).hasClass('selected');
+    $(this).toggleClass('selected');
+
+    const rgbRegex = /rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/;
+    const match = color.match(rgbRegex);
+    if (match){
+        const c = getRGBValues(match[0]);
+        const n = 'selected-filter';
+        const v = rgbToHex(c.red,c.green,c.blue);
+        isChecked ? removeLocalStorageArray(n, v) : saveLocalStorageArray(n, [v]);
+        loadLists(JSON.parse(gi(n) || '[]'));
+    }
 });
 
 

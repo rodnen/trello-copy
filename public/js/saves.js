@@ -81,6 +81,16 @@ function saveLocalStorageArray(localStorageName, array) {
     localStorage.setItem(localStorageName, JSON.stringify(mergedArray));
 }
 
+function removeLocalStorageArray(localStorageName, element) {
+    const storedList = localStorage.getItem(localStorageName) || '[]';
+    const storedArray = JSON.parse(storedList);
+    const index = storedArray.indexOf(element);
+    if (index !== -1) {
+        storedArray.splice(index, 1);
+        localStorage.setItem(localStorageName, JSON.stringify(storedArray));
+    }
+}
+
 function generateUniqueId() {
     return '_' + Math.random().toString(36).substr(2, 9);
 }

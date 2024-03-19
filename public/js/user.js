@@ -59,7 +59,7 @@ $(document).on('click','.generate-users',async function(){
     const boardData = getBoardDataFromStorage(storage,localStorage['selected-board']);
     const users = boardData.users;
    
-    $(this).parent().html(usersList(users)[0]);
+    $(this).parent().html(usersList(users, 5)[0]);
     sendToastMsg(`Користувачі згенеровані: ${countOfUsers}`, 'info', true);
 });
 
@@ -92,7 +92,7 @@ $(document).on('click', '.remove-selected-users', function (){
         $(document).find('.remove-selected-users').remove();
 
         const rPart = $('.r-part-menu');
-        const fill = usersList(users);
+        const fill = usersList(users, 5);
         rPart.find('.board-users-container').remove();
         rPart.prepend(fill);
 

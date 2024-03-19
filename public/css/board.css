@@ -148,6 +148,8 @@
     color: var(--tile-h-color);
     padding-bottom: 10px;
     font-size: 14px;
+    word-wrap: anywhere;
+    word-break: break-all;
 }
 
 .tile-date{
@@ -163,6 +165,12 @@
 .tile-date i {
     margin-right: 5px;
     font-size: 14px;
+}
+
+.u-side .t-u-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .d-side{

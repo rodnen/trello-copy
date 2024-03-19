@@ -29,9 +29,10 @@ header .h-nav-menu{
     margin-top: 60px;
 }
 
-.profile-thumbnail .nav-bar-img{
+/*.profile-thumbnail .nav-bar-img{
     margin-left: -11px;
-}
+}*/
+/*
 .profile-thumbnail .nav-bar-img:nth-child(1){
     z-index: 2;
 }
@@ -39,6 +40,7 @@ header .h-nav-menu{
 .profile-thumbnail .nav-bar-img:nth-child(2){
     z-index: 1;
 }
+*/
 
 .l-nav-menu{
     width: calc(100vw - var(--current-aria-width) - 24px);
@@ -97,6 +99,7 @@ header .h-nav-menu{
     text-overflow: ellipsis;
     white-space: nowrap;
     padding: 6px;
+    margin: 0;
 }
 
 .boards-list-section{
@@ -122,9 +125,11 @@ header .h-nav-menu{
     display: none;
 }
 
+/*
 .btn-settings{
     font-size: 18px;
 }
+*/
 
 #hide-menu-bar{
     width: calc(100% - 20px);
@@ -249,7 +254,8 @@ header .h-nav-menu{
     background-color: var(--active-element-bg);
 }
 
-.r-part-menu .profile-thumbnail img{
+.r-part-menu .profile-thumbnail img,
+.t-u-container .profile-thumbnail img{
     width: 28px;
     height: 28px;
     border-radius: 100%;

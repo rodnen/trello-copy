@@ -20,7 +20,7 @@
 
 
 .faded-bg .modal-dialog{
-    width: 500px;
+    width: 600px;
     height: fit-content;
 }
 
@@ -99,6 +99,8 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    max-height: 540px;
+    overflow: auto;
 }
 
 .faded-bg .dialog-window .dialog-user-content{
@@ -172,18 +174,15 @@ input[type=date]::-webkit-calendar-picker-indicator {
 
 
 .e-container, .r-container{
-    width: calc(100% - 45px);
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     gap: 10px;
-    margin-left: 45px;
     justify-content: start;
 }
 
 .add-employee{
-    width: 35px;
-    height: 35px;
+    width: 36px;
+    height: 36px;
     border-radius: 100%;
     background: var(--dialog-input-bg);
     display: flex;
@@ -221,7 +220,7 @@ li.profile-thumbnail img{
     display: flex;
     align-items: center;
     font-size: 14px;
-    gap: 10px;
+    gap: 4px;
     flex-shrink: 0;
     flex-wrap: nowrap;
     flex-direction: row;
@@ -293,7 +292,7 @@ li.profile-thumbnail img{
 
 /*TAGS*/
 
-.tags-container{
+.tags-container, .employee-body, .responsible-body{
     width: calc(100% - 55px - 25px);
     font-size: 14px;
     padding-left: 10px;
