@@ -153,8 +153,15 @@
 }
 
 .tile-date{
-    padding: 5px;
     background-color: #4cab83;
+}
+
+.tile-date-expired{
+    background-color: #ce5656;
+}
+
+.tile-date, .tile-date-expired{
+    padding: 5px;
     border-radius: 5px;
     width: fit-content;
     font-size: 12px;
@@ -233,7 +240,7 @@
     margin-top: 20px;
     max-height: calc(100vh - var(--header-height) - 20px - 12px - 70px);
     overflow: auto;
-    padding: 10px;
+    padding: 0 10px;
 }
 
 .board-settings .menu-content .list{
@@ -302,4 +309,23 @@
 
 .board-settings-bg .selectable-bg:hover{
     opacity: .8;
+}
+
+.board-settings-bg .log-item{
+    display: flex;
+    height: fit-content;
+    width: 100%;
+    gap: 15px;
+}
+
+.board-settings-bg .log-item .log-date {
+    font-size: 12px;
+    opacity: .7;
+    align-self: flex-start;
+    flex-shrink: 0;
+}
+
+.board-settings-bg .log-item .log-msg {
+    word-wrap: anywhere;
+    word-break: break-all;
 }

@@ -1,31 +1,3 @@
-const tile = {
-    name: 'Назва',
-    created: 'date',
-    creator: 'creator',
-    description: 'some',
-    tags: ['tag1','tag2'],
-    employes: ['1', '2'],
-    deadline: 'deadline'
-};
-
-const list = {
-    name: 'name',
-    tiles: ['tile1','tile2'],
-    crated: 'date',
-    color: 'color'
-};
-
-const board = {
-    name: 'name',
-    lists: ['list1','list2'],
-    users: ['user1', 'user2'],
-    background: 'color'
-}
-
-const users = {
-    userData: 'someData'
-}
-
 function updateJsonElement(jsonArray, data, id){
     const index = jsonArray.findIndex(obj => obj.id === id);
     
@@ -103,10 +75,43 @@ function pushListItem(boardData, listData){
     boardData.lists.push(listData);
 }
 
+function pushLogItem(msg){
+    const boardID = localStorage['selected-board'];
+    const storage = JSON.parse(localStorage['board']);
+    const boardData = getBoardDataFromStorage(storage, boardID);
+
+    const data = {
+        date: new Date(),
+        msg: msg,
+    }
+
+    boardData.log.push(data);
+    updateLocalStorage('board', JSON.stringify(storage));
+}
+
 function pushUser(boardData, userData){
     boardData.users.push(userData);
 }
 
 function removeFromArrayByValue(array, value) {
     return array.filter(item => item !== value);
+}
+
+function findTileByID(boardData, id){
+    const lists = boardData.lists;
+    for(let i = 0; i < lists.length; i++){
+        const list = lists[i];
+        for(let j = 0; j < list.tiles.length; j++){
+            const tile = list.tiles[j];
+            if(tile.id === id) return tile;
+        }
+    }
+}
+
+function clearLog(){
+    const boardID = localStorage['selected-board'];
+    const storage = JSON.parse(localStorage['board']);
+    const boardData = getBoardDataFromStorage(storage, boardID);
+    boardData.log = [];
+    updateLocalStorage('board', JSON.stringify(storage));
 }

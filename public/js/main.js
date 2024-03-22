@@ -57,7 +57,8 @@ $(document).on('click','#add-list > .btn-add-list', async function(){
     if(result !== null){
         pushListItem(boardData,result);
         updateLocalStorage('board', JSON.stringify(storage));
-        
+        pushLogItem(`Створено список "${result.name}"`);
+
         const list = $('#lists');
         const listItem = createListItem(result);
         list.append(listItem);
@@ -81,6 +82,7 @@ $(document).on('click','.btn-add-tile', async function(){
 
             pushTileItem(listData,result);
             updateLocalStorage('board', JSON.stringify(storage));
+            pushLogItem(`Створено задачу "${result.name}"`);
 
             const listItem = $(this).parent().find('.list-content');
             const tileItem = createTileItem(result);
@@ -146,6 +148,7 @@ $(document).on('drop','.list-item', function(e){
         deleteJsonElement(startListData.tiles,draggedElementID);
         insertJsonElement(endListData.tiles, newPosition, draggedElementData);
         updateLocalStorage('board',JSON.stringify(storage));
+        pushLogItem(`Задачу "${draggedElement.find('.tile-title').text()}", переміщено до списку "${$(this).find('.list-name').text()}"`);
     }
     catch(e){
         sendToastMsg(e.message,'error',true);
@@ -182,6 +185,7 @@ $(document).on('click','.del-list', async function(){
             if(result) {
                 deleteJsonElement(boardData.lists, listID);
                 updateLocalStorage('board', JSON.stringify(storage));
+                pushLogItem(`Список "${list.find('.list-name').text()}" видалено`);
                 list.remove();
                 sendToastMsg('Список видалено', 'info', true);
             }
@@ -205,8 +209,9 @@ $(document).on('click','.del-tile',async function(){
 
     if(result) {
         deleteJsonElement(listData.tiles, tileID);
-        tile.remove();
         updateLocalStorage('board', JSON.stringify(storage));
+        pushLogItem(`Задачу "${tile.find('.tile-title').text()}" видалено`);
+        tile.remove();
         sendToastMsg('Картку видалено', 'info', true);
     }
 });
@@ -219,17 +224,18 @@ $(document).on('click','.list-settings', function(){
     listDropDown(parent);
 });
 
+let colorTimer;
 $(document).on('click', '.chg-list-clr', function(){
     const picker = $(this).find('input[type="color"]');
     const list = $(this).closest('.list-item');
     picker.on('change',function(e){
+        clearTimeout(colorTimer);
         const selectors = '.list-ctrls .list-name, .list-ctrls .list-settings, .btn-add-tile .btn-content, .btn-content span';
         const selectedColor = e.target.value;
         const fontColor = getContrastColor(selectedColor);
 
         list.find(selectors).css('color', fontColor);
         list.css('background', selectedColor);
-
         
         const listID = list.attr('data-id');
         const storage = JSON.parse(localStorage['board']);
@@ -239,7 +245,11 @@ $(document).on('click', '.chg-list-clr', function(){
         listData.color = fontColor;
 
         updateLocalStorage('board', JSON.stringify(storage));
-        
+
+        colorTimer = setTimeout(function(){
+            pushLogItem(`Колір списку "${listData.name}" змінено на - ${selectedColor}`);
+        }, 500);
+
         if($('.res-list-clr').length === 0)
             $('<div>').addClass('list-el ctrl-e res-list-clr').text('Відновити колір').insertAfter($(this).parent());
     });
@@ -261,6 +271,7 @@ $(document).on('click', '.res-list-clr', function(){
     listData.color = '';
 
     updateLocalStorage('board', JSON.stringify(storage));
+    pushLogItem(`Колір списку "${listData.name}" відновлено`);
 
     $(this).remove();
 });
@@ -395,7 +406,10 @@ function createTileItem(data){
     const deleteBtn = $('<div>').addClass('del-tile').append('<i>').addClass('bx bxs-trash');
 
     const tileTitle = $('<div>').addClass('tile-title').text(data.name);
-    const tileDate = $('<div>').addClass('tile-date').html("<i class='bx bx-time'></i>"+formatDate(new Date(data.date)));
+
+    if(!data.expired) checkTileDataExpired(data);
+
+    const tileDate = $('<div>').addClass(data.expired ? 'tile-date-expired' : 'tile-date').html("<i class='bx bx-time'></i>"+formatDate(new Date(data.date)));
 
     const titleUsersContainer = $('<div>').addClass('t-u-container');
     titleUsersContainer.append(tileTitle, users);
@@ -419,6 +433,24 @@ function createTileUsers(data){
 
     return usersList(filteredObjects, 2);
 }
+
+function checkTileDataExpired(data){
+    const storage = JSON.parse(localStorage['board']);
+    const boardData = getBoardDataFromStorage(storage,localStorage['selected-board']);
+    const tile = findTileByID(boardData, data.id);
+
+    try{
+        validateDate(tile.date);
+    }
+    catch(e){
+        updateLocalStorage('board', JSON.stringify(storage));
+        pushLogItem(`Термін виконання завдання "${data.name}" вичерпано`);
+        data.expired = true;
+        tile.expired = true;
+    }
+}
+
+
 function formatDate(date){
     const months = ["січ", "лют", "бер", "квіт", "трав", "чер", "лип", "серп", "вер", "жовт", "лист", "груд"];
     const day = date.getDate();

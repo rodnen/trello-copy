@@ -46,6 +46,10 @@ function CreateModalWindowForBoard(parent) {
 
     return new Promise((resolve) => {
         window.on('click', '.create-btn', () => {
+            const firstLog = {
+                date: new Date,
+                msg: "Дошку створено",
+            }
             const data = { 
                 id: generateUniqueId(), 
                 name: nameInput.val(),
@@ -53,8 +57,8 @@ function CreateModalWindowForBoard(parent) {
                 created: new Date(),
                 users: [],
                 background: 'var(--board-bg' + getRandomInt(boardBackgroundCount - 1) + ')',
-                tags: ['#ff3333','#6833ff','#60e830','#e8d530']
-
+                tags: ['#ff3333','#6833ff','#60e830','#e8d530'],
+                log: [firstLog],
             };
             
             try {
@@ -175,6 +179,7 @@ async function createModalWindowForTile(parent) {
                 responsible: JSON.parse(localStorage['selected-responsible'] || '[]'),
                 description: $('textarea[name="description"]').val(),
                 tags: getSelectedTags(),
+                expired: false,
             };
             
             try{
@@ -285,6 +290,7 @@ function CreateModalWindowForTileEdit(parent, data) {
                 description: $('textarea[name="description"]').val(),
                 prevDate : prevDate,
                 tags: getSelectedTags(),
+                expired: false,
             };
 
             try{
@@ -459,11 +465,17 @@ function createBoardSettings(titleName, type) {
     if(type === 1){
         const listEl1 = $("<div>").addClass("list-el ctrl-e chg-board-bg");
         listEl1.append($("<div>").addClass("board-background").css('background', boardBg)).append("Змінити фон");
+
         const listEl2 = $("<div>").addClass("list-el ctrl-e chg-tags");
-        listEl2.append($("<i>").addClass("bx bxs-purchase-tag")).append("Редагувати мітки");    
-        const listEl3 = $("<div>").addClass("list-el ctrl-e del-board");
-        listEl3.append($("<i>").addClass("bx bxs-trash")).append("Видалити");    
-        list.append(listEl1, listEl2, listEl3);
+        listEl2.append($("<i>").addClass("bx bxs-purchase-tag")).append("Редагувати мітки");
+
+        const listEl3 = $("<div>").addClass("list-el ctrl-e view-log");
+        listEl3.append($("<i>").addClass("bx bx-list-ul")).append("Лог роботи");
+
+        const listEl4 = $("<div>").addClass("list-el ctrl-e del-board");
+        listEl4.append($("<i>").addClass("bx bxs-trash")).append("Видалити");
+
+        list.append(listEl1, listEl2, listEl3, listEl4);
     }
     else if( type === 2 ){
         for(let i = 0; i < boardBackgroundCount; i++){
@@ -488,6 +500,7 @@ function createBoardSettings(titleName, type) {
                     boardData.tags.splice(list.find(body).index(), 1);
                     removeTagsFromTiles(boardData, color)
                     updateLocalStorage('board', JSON.stringify(storage));
+                    pushLogItem(`Видалено мітку з кольором - ${color}`);
                     body.remove();
                 }else{
                     sendToastMsg('Міток не може бути менше ніж 2', 'error', true);
@@ -513,6 +526,7 @@ function createBoardSettings(titleName, type) {
                 boardData.tags.push(selectedColor);
                 createEl(selectedColor).insertBefore(pickBtn);
                 updateLocalStorage('board', JSON.stringify(storage));
+                pushLogItem(`Додано мітку - ${selectedColor}`);
             }
             else{
                 sendToastMsg('Міток не може бути більше ніж 10', 'error', true);
@@ -522,6 +536,41 @@ function createBoardSettings(titleName, type) {
         list.append(pickBtn);
     }
 
+    else if( type === 4 ){
+        const storage = JSON.parse(localStorage['board']);
+        const boardData = getBoardDataFromStorage(storage, localStorage['selected-board']);
+        const logs = boardData.log;
+
+        const createLogItem = (data, number) => {
+            const body = $('<div>').addClass('log-item').attr('data-id', number);
+            const date = $('<div>').addClass('log-date').text(formatDate(new Date(data.date)));
+            const message = $('<div>').addClass('log-msg').text(data.msg);
+            body.append(date, message);
+            return body;
+        };
+
+        const loadMoreLog = (start) =>{
+            if(start === 0) return;
+            const limit = 20;
+            const min = start > limit ? start - limit : 0;
+            for(let i = start; i >= min; i--){
+                list.append(createLogItem(logs[i],i));
+            }
+        };
+
+        loadMoreLog(logs.length - 1);
+
+        menuContent.on('scroll', function() {
+            const scrollHeight = $(this).prop('scrollHeight');
+            const visibleHeight = $(this).height();
+            const scrollTop = $(this).scrollTop();
+
+            if (Math.ceil(scrollHeight - scrollTop) === visibleHeight) {
+                const n = parseInt(list.children().last().attr('data-id'));
+                loadMoreLog(n);
+            }
+        });
+    }
     menuContent.append(list);
     type !== 1 ? titleBar.append(closeBtn, title) :  titleBar.append(title, closeBtn); 
     section.append(titleBar, menuContent);
@@ -584,6 +633,12 @@ $(document).on('click','.chg-tags',function(){
         main.append(createBoardSettings('Зміна міток', 3));
 });
 
+$(document).on('click','.view-log',function(){
+    const main = $('.main-content');
+    if(main.find('.board-settings-bg').length === 0)
+        main.append(createBoardSettings('Лог роботи', 4));
+});
+
 $(document).on('click','.selectable-bg',function(){
     const newBg = $(this).attr('style').split(' ')[1].split(';')[0];
     const storage = JSON.parse(localStorage['board']);
@@ -593,6 +648,7 @@ $(document).on('click','.selectable-bg',function(){
     changeBoardBg(newBg);
     changeSelectedColor(newBg);
     updateLocalStorage('board',JSON.stringify(storage));
+    pushLogItem(`Тло дошки змінено`);
     sendToastMsg('Колір фону змінено','info', true);
 });
 
@@ -605,8 +661,12 @@ function changeSelectedColor(background){
     $('.board-background').css('background', background);
 }
 
+let listNameTimer;
+let boardNameTimer;
+let oldListName = "";
 $(document).on('input','.list-name', function(){
     try{
+        clearTimeout(listNameTimer);
         const listID = $(this).closest('.list-item').attr('data-id');
         const text = $(this).text();
 
@@ -617,6 +677,12 @@ $(document).on('input','.list-name', function(){
 
         validateName(text);
 
+        listNameTimer = setTimeout(function (){
+            pushLogItem(`Назву списку "${oldListName}" змінено на "${text}"`);
+            oldListName = "";
+        }, 10000);
+
+        if(oldListName === "") oldListName = list.name;
         list.name = text;
         updateLocalStorage('board',JSON.stringify(storage));
     }
@@ -626,6 +692,8 @@ $(document).on('input','.list-name', function(){
 });
 $(document).on('input','#list-name', function(){
     try{
+        clearTimeout(boardNameTimer);
+
         const text = $(this).text();
         const storage = JSON.parse(localStorage['board']);
         const boardID = localStorage['selected-board'];
@@ -633,8 +701,12 @@ $(document).on('input','#list-name', function(){
         const boardItem = $('.board-item[data-id = '+boardID+']');
 
         validateName(text);
-
         boardItem.find('span').text(text);
+
+        boardNameTimer = setTimeout(function (){
+            pushLogItem(`Назву дошки змінено на "${text}"`);
+        }, 10000);
+
         board.name = text;
         updateLocalStorage('board',JSON.stringify(storage));
     }
@@ -663,6 +735,7 @@ $(document).on('click','.list-tile',async function(e) {
     const data = await CreateModalWindowForTileEdit(faded, tile);
 
     if (data != null) {
+        const oldTile = $.extend( true, {}, tile );
         data.id = tile.id;
         tile.name = data.name;
         tile.description = data.description;
@@ -670,14 +743,28 @@ $(document).on('click','.list-tile',async function(e) {
         tile.employes = data.employes;
         tile.responsible = data.responsible;
         tile.tags = data.tags;
+        tile.expired = data.expired;
 
         updateLocalStorage('board', JSON.stringify(storage));
+        checkTileChanges(JSON.parse(JSON.stringify(data)), oldTile);
 
         const newTile = createTileItem(data);
         $(this).replaceWith(newTile);
         sendToastMsg('Зміни збережено', 'info', true);
     }
 });
+
+function checkTileChanges(data, tile){
+    let changes = "";
+    if (tile.name !== data.name) changes += `[${tile.name}] - [${data.name}]`;
+    if (tile.description !== data.description) changes += `\n[${tile.description}] - [${data.description}]`;
+    if (formatDate(new Date(tile.date)) !== formatDate(new Date(data.date))) changes += `\n[${formatDate(new Date(tile.date))}] - [${formatDate(new Date(data.date))}]`;
+    if (tile.employes.toString() !== data.employes.toString()) changes += `\n[${tile.employes.join(", ")}] - [${data.employes.join(", ")}]`;
+    if (tile.responsible.toString() !== data.responsible.toString()) changes += `\n[${tile.responsible.join(", ")}] - [${data.responsible.join(", ")}]`;
+    if (tile.tags.toString() !== data.tags.toString()) changes += `\n[${tile.tags.join(", ")}] - [${data.tags.join(", ")}]`;
+
+    if(changes !== "") pushLogItem(`Зміни для задачі "${tile.name}:\n` + changes);
+}
 
 $(document).on('click','.e-list li.profile-thumbnail',function(){
     $(this).toggleClass('active');
