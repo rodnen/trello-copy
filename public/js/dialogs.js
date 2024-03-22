@@ -550,7 +550,7 @@ function createBoardSettings(titleName, type) {
         };
 
         const loadMoreLog = (start) =>{
-            if(start === 0) return;
+            if(start < 0) return;
             const limit = 20;
             const min = start > limit ? start - limit : 0;
             for(let i = start; i >= min; i--){
@@ -567,6 +567,7 @@ function createBoardSettings(titleName, type) {
 
             if (Math.ceil(scrollHeight - scrollTop) === visibleHeight) {
                 const n = parseInt(list.children().last().attr('data-id'));
+                if(n === 0) return;
                 loadMoreLog(n);
             }
         });
