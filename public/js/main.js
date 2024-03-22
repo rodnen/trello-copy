@@ -690,6 +690,7 @@ function validateEmployes(data){
 function validateTile(data){
     try{
         validateName(data.name);
+        validateUniqueName(data);
         validateTagsCount(data.tags);
         data.prevDate ? validateDateEdit(data.date, data.prevDate) : validateDate(data.date);
         validateDescription(data.description);
@@ -698,6 +699,10 @@ function validateTile(data){
     catch(e){
         throw new Error(e.message);
     }
+}
+
+function validateUniqueName(data){
+    if(tileNameUsed(data.name, data.id)) throw new Error('Назва задачі повинна бути унікальною');
 }
 /*VALIDATION*/
 /*VALIDATION*/

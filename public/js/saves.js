@@ -115,3 +115,32 @@ function clearLog(){
     boardData.log = [];
     updateLocalStorage('board', JSON.stringify(storage));
 }
+
+function hasTiles(){
+    const boardID = localStorage['selected-board'];
+    const storage = JSON.parse(localStorage['board']);
+    const boardData = storage.find(obj => obj.id === boardID);
+    const lists = boardData.lists;
+    for(let i = 0; i < lists.length; i++){
+        const list = lists[i];
+        if(list.tiles.length > 0) return true;
+    }
+
+    return false;
+}
+
+function tileNameUsed(name, id){
+    const boardID = localStorage['selected-board'];
+    const storage = JSON.parse(localStorage['board']);
+    const boardData = storage.find(obj => obj.id === boardID);
+    const lists = boardData.lists;
+    for(let i = 0; i < lists.length; i++){
+        const list = lists[i];
+        for(let j = 0; j < list.tiles.length; j++){
+            const tile = list.tiles[j];
+            if(tile.name === name && tile.id !== id) return true;
+        }
+    }
+
+    return false;
+}

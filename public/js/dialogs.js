@@ -198,7 +198,7 @@ async function createModalWindowForTile(parent) {
     });
 }
 
-function CreateModalWindowForTileEdit(parent, data) {
+function CreateModalWindowForTileEdit(parent, data, id) {
     localStorage.removeItem('selected-users');
     localStorage.removeItem('selected-workers');
     localStorage.removeItem('selected-responsible');
@@ -282,6 +282,7 @@ function CreateModalWindowForTileEdit(parent, data) {
     return new Promise((resolve) => {
         window.on('click', '.create-btn', () => {
             const data = {
+                id: id,
                 created: new Date(),
                 name: $('input[name="name"]').val(),
                 date: selectedDate,
@@ -608,6 +609,11 @@ $(document).on('click', '.del-board', async function(){
     const boardID = localStorage['selected-board'];
     const element = $('.board-item[data-id="'+boardID+'"]');
 
+    if(hasTiles()){
+        sendToastMsg('Дошку не можна видалити, поки в ній є завдання', 'error', true);
+        return;
+    }
+
     const result = await showDialogWindow('Ви певні, що хочете видалити дошку?');
 
     if(result) {
@@ -733,7 +739,7 @@ $(document).on('click','.list-tile',async function(e) {
     const faded = createFadedBg();
     main.append(faded);
 
-    const data = await CreateModalWindowForTileEdit(faded, tile);
+    const data = await CreateModalWindowForTileEdit(faded, tile, tileID);
 
     if (data != null) {
         const oldTile = $.extend( true, {}, tile );
